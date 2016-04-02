@@ -31,7 +31,7 @@ public class Encoder{
             int value = rand.nextInt(count);
             int f = 0;
 
-            for(int j = 0; j < frequencies.length-1; j++){
+            for(int j = 0; j < frequencies.length; j++){
                 if(value >= f && value < (f+frequencies[j])){
                     char ch = (char)('a'+j);
                     fw.write(ch);
@@ -85,6 +85,12 @@ public class Encoder{
         int i = 0;
 
         while(text.length() > 0){
+            while(codes[i].length() > text.length()){
+                if(i > codes.length){
+                    break;
+                }
+                i++;
+            }
             String code = codes[i];
             String comp = text.substring(0, code.length());
 
@@ -147,7 +153,7 @@ public class Encoder{
      * provided by the Huffman code and writes it to "testText.enc2".
      * Returns the average bits per symbol.
      */
-    public static double encode2(String[] codes) throws IOException{
+    public static double twoEncode(String[] codes) throws IOException{
         Scanner in = new Scanner(new FileReader("testText"));
         String text = in.nextLine();
 
@@ -157,7 +163,7 @@ public class Encoder{
         for(int i = 0; i < text.length()/2; i++){
             int a = (int)text.charAt(i)-97;
             int b = (int)text.charAt(i+1)-97;
-            int c = a + b;
+            int c = (a*4) + b;
             String code = codes[c];
             avg += code.length();
             fw.write(code);
@@ -169,7 +175,7 @@ public class Encoder{
     }
 
     /* Decodes the encoded "testText" and writes it to "testText.dec2" */
-    public static void decode2(String[] codes, String[] symbols) throws IOException{
+    public static void twoDecode(String[] codes, String[] symbols) throws IOException{
         Scanner in = new Scanner(new FileReader("testText.enc2"));
         String text = in.nextLine();
 
@@ -177,6 +183,12 @@ public class Encoder{
         int i = 0;
 
         while(text.length() > 0){
+            while(codes[i].length() > text.length()){
+                if(i > codes.length){
+                    break;
+                }
+                i++;
+            }
             String code = codes[i];
             String comp = text.substring(0, code.length());
 
@@ -203,31 +215,31 @@ public class Encoder{
 
             Scanner in = new Scanner(new File(filename));
             String[] symbols = new String[characters];
-            int[] freq1 = new int[characters];
+            int[] freq = new int[characters];
             int i = 0; // keep track of where in the array
             int count = 0;
 
             while(in.hasNext()){ // reads the file and adds the frequencies to an array
                 int line = Integer.parseInt(in.nextLine()); // frequency
                 count += line;
-                freq1[i] = line;
+                freq[i] = line;
                 char ch = (char)('a'+i);
                 symbols[i++] = "" + ch;
             }
 
-            double[] probs1 = getProb(freq1, count);
-            tree = h.getHuffmanTree(freq1, symbols); // create a Huffman tree
+            double[] probs = getProb(freq, count);
+            tree = h.getHuffmanTree(freq, symbols); // create a Huffman tree
             String[] codes = h.getCode(tree.root, characters); // get encodings; 0 is a, 1 is b, etc.
 
-            h.printCode(codes, freq1, probs1, symbols);
+            h.printCode(codes, freq, probs, symbols);
 
-            text(freq1, characters, count); // creates the random text
+            text(freq, characters, count); // creates the random text
 
             /* Single symbol encoding */
             double avgbit = encode(codes); // average bits
             decode(codes);
 
-            double e = entropy(freq1, count); // entropy
+            double e = entropy(freq, count); // entropy
             double avg = (avgbit+e)/2;
             double pctdiff = Math.abs(avg-e)/avg*100; // percent difference
 
@@ -236,14 +248,25 @@ public class Encoder{
             System.out.printf("Percent difference: %f%% \n", pctdiff);
 
             String[] two = twoSymbol(characters);
-            int[] freq2 = twoFrequencies(freq1, two);
-            double[] probs2 = getProb(freq2, count*count);
+            int[] freqTwo = twoFrequencies(freq, two);
+            double[] probsTwo = getProb(freqTwo, count*count);
 
-            tree = h.getHuffmanTree(freq2, two);
-            String[] codes2 = h.getCode(tree.root, characters);
+            tree = h.getHuffmanTree(freqTwo, two);
+            String[] codesTwo = h.getCode(tree.root, characters);
 
-            h.printCode(codes2, freq2, probs2, two);
+            h.printCode(codesTwo, freqTwo, probsTwo, two);
 
+            /* Two symbol encoding */
+            double avgbitTwo = twoEncode(codesTwo);
+            twoDecode(codesTwo);
+
+            double e2 = entropy(freqTwo, count*count); // entropy
+            double avg2 = (avgbitTwo+e2)/2;
+            double pctdiff2 = Math.abs(avg2-e2)/avg2*100; // percent difference
+
+            System.out.println("Average bits: "+avgbit);
+            System.out.println("Entropy: "+e);
+            System.out.printf("Percent difference: %f%% \n", pctdiff);
 
         }
     }

@@ -21,11 +21,10 @@ public class Huffman {
             assignCode(root.right, codes);
         }
         else {
-            System.out.println(root.element+" "+root.code);
             if(root.element.length() > 1){
                 int a = (int)root.element.charAt(0)-97;
                 int b = (int)root.element.charAt(1)-97;
-                int c = a + b;
+                int c = (a*4) + b;
                 codes[c] = root.code;
             }
             else{
