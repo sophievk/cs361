@@ -43,10 +43,21 @@ public class Encoder{
         fw.close();
     }
 
+    /* Computes the probabilities and returns it in an array */
+    public static double[] getProb(int[] frequencies, int count){
+        double[] p = new double[frequencies.length];
+
+        for(int i = 0; i < frequencies.length; i++){
+            p[i] = ((double)frequencies[i]/count);
+        }
+
+        return p;
+    }
+
     /* Encodes the "testText" using the codings provided by the Huffman code
      * and writes it to "testText.enc1". Returns the average bits per symbol.
      */
-    public static double encode(String[] codes, int[] frequencies) throws IOException{
+    public static double encode(String[] codes) throws IOException{
         Scanner in = new Scanner(new FileReader("testText"));
         String text = in.nextLine();
 
@@ -90,6 +101,48 @@ public class Encoder{
         fw.close();
     }
 
+    /* Computes a two-symbol alphabet and returns a String[] */
+    public static String[] twoSymbol(int k){
+        String[] two = new String[(int)Math.pow(k,2)];
+        int t = 0; // Keep track of where in array
+
+        for(int i = 0; i < k; i++){
+            StringBuilder str = new StringBuilder();
+            char ch = (char)('a'+i);
+            str.append(ch);
+
+            for(int j = 0; j < k; j++){
+                ch = (char)('a'+j);
+                str.append(ch);
+
+                two[t++] = str.toString();
+
+                str.delete(1, str.length());
+            }
+        }
+        return two;
+    }
+
+    /* Calculates the new frequencies for the two-symbol alphabet */
+    public static int[] twoFrequencies(int[] frequencies, String[] two){
+        int[] newf = new int[two.length];
+        int i = 0;
+
+        for(String s : two){
+            int a = (int)s.charAt(0)-97;
+            int b = (int)s.charAt(1)-97;
+
+            int f1 = frequencies[a];
+            int f2 = frequencies[b];
+
+            int freq = f1*f2;
+
+            newf[i++] = freq;
+        }
+
+        return newf;
+    }
+
     public static void main(String[] args) throws IOException{
         Huffman h = new Huffman();
         Huffman.Tree tree;
@@ -109,13 +162,14 @@ public class Encoder{
                 frequencies[i++] = line;
             }
 
+            double[] probs = getProb(frequencies, count);
             tree = h.getHuffmanTree(frequencies); // create a Huffman tree
             String[] codes = h.getCode(tree.root); // get encodings; 0 is a, 1 is b, etc.
 
-            h.printCode(codes, frequencies);
+            h.printCode(codes, frequencies, probs);
 
             text(frequencies, characters, count); // creates the random text
-            double avgbit = encode(codes, frequencies); // average bits
+            double avgbit = encode(codes); // average bits
             decode(codes);
 
             double e = entropy(frequencies, count); // entropy
@@ -125,6 +179,10 @@ public class Encoder{
             double pctdiff = Math.abs(avg-e)/avg*100;
             System.out.printf("Percent difference: %f%% \n", pctdiff);
 
+            String[] two = twoSymbol(characters);
+            for(String s : two){
+                System.out.println(s);
+            }
         }
     }
 }

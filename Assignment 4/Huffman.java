@@ -1,25 +1,12 @@
 import java.util.Scanner;
 
 public class Huffman {
-    // public static void main(String[] args) {
-    //     Scanner input = new Scanner(System.in);
-    //     System.out.print("Enter a text: ");
-    //     String text = input.nextLine();
-    //
-    //     int[] counts = getCharacterFrequency(text); // Count frequency
-    //
-    //     Tree tree = getHuffmanTree(counts); // Create a Huffman tree
-    //     String[] codes = getCode(tree.root); // Get codes
-    //
-    //     printCode(codes, counts);
-    // }
-
     /** Get Huffman codes for the characters
     * This method is called once after a Huffman tree is built
     */
     public static String[] getCode(Tree.Node root) {
         if (root == null) return null;
-        String[] codes = new String[2 * 13];
+        String[] codes = new String[26];
         assignCode(root, codes);
         return codes;
     }
@@ -41,7 +28,7 @@ public class Huffman {
     /** Get a Huffman tree from the codes */
     public static Tree getHuffmanTree(int[] counts) {
         // Create a heap to hold trees
-        Heap<Tree> heap = new Heap<Tree>(); // Defined in Listing 24.10
+        Heap<Tree> heap = new Heap<Tree>();
         for (int i = 0; i < counts.length; i++) {
             if (counts[i] > 0){
                 char ch = (char)('a'+i);
@@ -58,14 +45,14 @@ public class Huffman {
         return heap.remove(); // The final tree
     }
 
-    public static void printCode(String[] codes, int[] counts){
-        System.out.printf("%-15s%-15s%-15s\n",
-        "Character", "Frequency", "Code");
+    public static void printCode(String[] codes, int[] counts, double[] probs){
+        System.out.printf("%-15s%-15s%-15s%-15s\n",
+        "Character", "Weight", "Frequency", "Code");
         for (int i = 0; i < codes.length; i++){
             char ch = (char)('a'+i);
             if (counts[i] != 0) // (char)i is not in text if counts[i] is 0
-                System.out.printf("%-15s%-15d%-15s\n",
-                ch + "", counts[i], codes[i]);
+                System.out.printf("%-15s%-15s%-15d%-15s\n",
+                ch + "", probs[i], counts[i], codes[i]);
         }
     }
 
