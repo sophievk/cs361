@@ -20,7 +20,7 @@ twoSymbol() computes a two-symbol alphabet and returns a String[].
 twoFrequencies() calculates the new frequencies for the two-symbol alphabet.
 
 Huffman.java is the Huffman algorithm. I got the code from http://www.cs.armstrong.edu/liang/intro9e/html/HuffmanCode.html
-In the code I, main(): removed, getCode(): changed to create an array of size 26, assignCode(): changed root.element from the value of the character to value of character - 97, getHuffmanTree(): changed to account for not using the characters value in the counting, getCharacterFrequency(): removed, printCode(): added, it prints a table with the character, its frequency, and its encoding.
+In the code I, main(): removed, getCode(): changed to create an array of size 26, assignCode(): changed root.element from the value of the character to value of character - 97, getHuffmanTree(): changed to account for not using the characters value in the counting, getCharacterFrequency(): removed, printCode(): added, it prints a table with the character, its frequency, and its encoding. Modified code to take in a String as the stored element instead of a character.
 
 Heap.java is a heap also defined by the same person. It was used in the Huffman algorithm I got it here: http://www.cs.armstrong.edu/liang/intro9e/html/Heap.html
 I did not change this file.

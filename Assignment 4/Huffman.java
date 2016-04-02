@@ -4,9 +4,9 @@ public class Huffman {
     /** Get Huffman codes for the characters
     * This method is called once after a Huffman tree is built
     */
-    public static String[] getCode(Tree.Node root) {
+    public static String[] getCode(Tree.Node root, int x) {
         if (root == null) return null;
-        String[] codes = new String[26];
+        String[] codes = new String[(int)Math.pow(x, 2)];
         assignCode(root, codes);
         return codes;
     }
@@ -21,18 +21,27 @@ public class Huffman {
             assignCode(root.right, codes);
         }
         else {
-            codes[(int)root.element-97] = root.code;
+            System.out.println(root.element+" "+root.code);
+            if(root.element.length() > 1){
+                int a = (int)root.element.charAt(0)-97;
+                int b = (int)root.element.charAt(1)-97;
+                int c = a + b;
+                codes[c] = root.code;
+            }
+            else{
+                int c = (int)root.element.charAt(0)-97;
+                codes[c] = root.code;
+            }
         }
     }
 
     /** Get a Huffman tree from the codes */
-    public static Tree getHuffmanTree(int[] counts) {
+    public static Tree getHuffmanTree(int[] counts, String[] symbols) {
         // Create a heap to hold trees
         Heap<Tree> heap = new Heap<Tree>();
         for (int i = 0; i < counts.length; i++) {
             if (counts[i] > 0){
-                char ch = (char)('a'+i);
-                heap.add(new Tree(counts[i], ch)); // A leaf node tree
+                heap.add(new Tree(counts[i], symbols[i])); // A leaf node tree
             }
         }
 
@@ -45,14 +54,14 @@ public class Huffman {
         return heap.remove(); // The final tree
     }
 
-    public static void printCode(String[] codes, int[] counts, double[] probs){
+    public static void printCode(String[] codes, int[] counts, double[] probs, String[] symbols){
         System.out.printf("%-15s%-15s%-15s%-15s\n",
         "Character", "Weight", "Frequency", "Code");
-        for (int i = 0; i < codes.length; i++){
-            char ch = (char)('a'+i);
-            if (counts[i] != 0) // (char)i is not in text if counts[i] is 0
-                System.out.printf("%-15s%-15s%-15d%-15s\n",
-                ch + "", probs[i], counts[i], codes[i]);
+        for (int i = 0; i < symbols.length; i++){
+            if (counts[i] != 0){ // (char)i is not in text if counts[i] is 0
+                System.out.printf("%-15s%-15.3f%-15d%-15s\n",
+                symbols[i] + "", probs[i], counts[i], codes[i]);
+            }
         }
     }
 
@@ -69,7 +78,7 @@ public class Huffman {
         }
 
         /** Create a tree containing a leaf node */
-        public Tree(int weight, char element) {
+        public Tree(int weight, String element) {
             root = new Node(weight, element);
         }
 
@@ -84,7 +93,7 @@ public class Huffman {
         }
 
         public class Node {
-            char element; // Stores the character for a leaf node
+            String element; // Stores the character for a leaf node
             int weight; // weight of the subtree rooted at this node
             Node left; // Reference to the left subtree
             Node right; // Reference to the right subtree
@@ -95,7 +104,7 @@ public class Huffman {
             }
 
             /** Create a node with the specified weight and character */
-            public Node(int weight, char element) {
+            public Node(int weight, String element) {
                 this.weight = weight;
                 this.element = element;
             }

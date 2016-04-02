@@ -143,6 +143,56 @@ public class Encoder{
         return newf;
     }
 
+    /* Encodes using the 2-symbol alphabet the "testText" using the codings
+     * provided by the Huffman code and writes it to "testText.enc2".
+     * Returns the average bits per symbol.
+     */
+    public static double encode2(String[] codes) throws IOException{
+        Scanner in = new Scanner(new FileReader("testText"));
+        String text = in.nextLine();
+
+        FileWriter fw = new FileWriter("testText.enc2");
+        double avg = 0.0;
+
+        for(int i = 0; i < text.length()/2; i++){
+            int a = (int)text.charAt(i)-97;
+            int b = (int)text.charAt(i+1)-97;
+            int c = a + b;
+            String code = codes[c];
+            avg += code.length();
+            fw.write(code);
+        }
+        avg /= text.length();
+        fw.close();
+
+        return avg;
+    }
+
+    /* Decodes the encoded "testText" and writes it to "testText.dec2" */
+    public static void decode2(String[] codes, String[] symbols) throws IOException{
+        Scanner in = new Scanner(new FileReader("testText.enc2"));
+        String text = in.nextLine();
+
+        FileWriter fw = new FileWriter("testText.dec2");
+        int i = 0;
+
+        while(text.length() > 0){
+            String code = codes[i];
+            String comp = text.substring(0, code.length());
+
+            if(comp.compareTo(code) == 0){
+                String s = symbols[i];
+                fw.write(s);
+                text = text.substring(code.length());
+                i = 0;
+            }
+            else{
+                i++;
+            }
+        }
+        fw.close();
+    }
+
     public static void main(String[] args) throws IOException{
         Huffman h = new Huffman();
         Huffman.Tree tree;
@@ -152,37 +202,49 @@ public class Encoder{
             int characters = Integer.parseInt(args[1]);
 
             Scanner in = new Scanner(new File(filename));
-            int[] frequencies = new int[26];
+            String[] symbols = new String[characters];
+            int[] freq1 = new int[characters];
             int i = 0; // keep track of where in the array
             int count = 0;
 
             while(in.hasNext()){ // reads the file and adds the frequencies to an array
                 int line = Integer.parseInt(in.nextLine()); // frequency
                 count += line;
-                frequencies[i++] = line;
+                freq1[i] = line;
+                char ch = (char)('a'+i);
+                symbols[i++] = "" + ch;
             }
 
-            double[] probs = getProb(frequencies, count);
-            tree = h.getHuffmanTree(frequencies); // create a Huffman tree
-            String[] codes = h.getCode(tree.root); // get encodings; 0 is a, 1 is b, etc.
+            double[] probs1 = getProb(freq1, count);
+            tree = h.getHuffmanTree(freq1, symbols); // create a Huffman tree
+            String[] codes = h.getCode(tree.root, characters); // get encodings; 0 is a, 1 is b, etc.
 
-            h.printCode(codes, frequencies, probs);
+            h.printCode(codes, freq1, probs1, symbols);
 
-            text(frequencies, characters, count); // creates the random text
+            text(freq1, characters, count); // creates the random text
+
+            /* Single symbol encoding */
             double avgbit = encode(codes); // average bits
             decode(codes);
 
-            double e = entropy(frequencies, count); // entropy
+            double e = entropy(freq1, count); // entropy
+            double avg = (avgbit+e)/2;
+            double pctdiff = Math.abs(avg-e)/avg*100; // percent difference
+
             System.out.println("Average bits: "+avgbit);
             System.out.println("Entropy: "+e);
-            double avg = (avgbit+e)/2;
-            double pctdiff = Math.abs(avg-e)/avg*100;
             System.out.printf("Percent difference: %f%% \n", pctdiff);
 
             String[] two = twoSymbol(characters);
-            for(String s : two){
-                System.out.println(s);
-            }
+            int[] freq2 = twoFrequencies(freq1, two);
+            double[] probs2 = getProb(freq2, count*count);
+
+            tree = h.getHuffmanTree(freq2, two);
+            String[] codes2 = h.getCode(tree.root, characters);
+
+            h.printCode(codes2, freq2, probs2, two);
+
+
         }
     }
 }
