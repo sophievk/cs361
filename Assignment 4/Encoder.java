@@ -67,7 +67,22 @@ public class Encoder{
         String text = in.nextLine();
 
         FileWriter fw = new FileWriter("testText.dec1");
+        int i = 0;
 
+        while(text.length() > 0){
+            String code = codes[i];
+            String comp = text.substring(0, code.length());
+
+            if(comp.compareTo(code) == 0){
+                char ch = (char)('a'+i);
+                fw.write(ch);
+                text = text.substring(code.length());
+                i = 0;
+            }
+            else{
+                i++;
+            }
+        }
         fw.close();
     }
 
@@ -97,6 +112,7 @@ public class Encoder{
 
             text(frequencies, characters, count); // creates the random text
             encode(codes);
+            decode(codes);
 
             double e = entropy(frequencies, count); // entropy
             System.out.println("Entropy: "+e);
