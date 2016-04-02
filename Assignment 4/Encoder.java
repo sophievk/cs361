@@ -44,21 +44,25 @@ public class Encoder{
     }
 
     /* Encodes the "testText" using the codings provided by the Huffman code
-     * and writes it to "testText.enc1"
+     * and writes it to "testText.enc1". Returns the average bits per symbol.
      */
-    public static void encode(String[] codes) throws IOException{
+    public static double encode(String[] codes, int[] frequencies) throws IOException{
         Scanner in = new Scanner(new FileReader("testText"));
         String text = in.nextLine();
 
         FileWriter fw = new FileWriter("testText.enc1");
+        double avg = 0.0;
 
         for(int i = 0; i < text.length(); i++){
             int ch = ((int)text.charAt(i)-97);
             String code = codes[ch];
+            avg += code.length();
             fw.write(code);
         }
-
+        avg /= text.length();
         fw.close();
+
+        return avg;
     }
 
     /* Decodes the encoded "testText" and writes it to "testText.dec1" */
@@ -111,11 +115,15 @@ public class Encoder{
             h.printCode(codes, frequencies);
 
             text(frequencies, characters, count); // creates the random text
-            encode(codes);
+            double avgbit = encode(codes, frequencies); // average bits
             decode(codes);
 
             double e = entropy(frequencies, count); // entropy
+            System.out.println("Average bits: "+avgbit);
             System.out.println("Entropy: "+e);
+            double avg = (avgbit+e)/2;
+            double pctdiff = Math.abs(avg-e)/avg*100;
+            System.out.printf("Percent difference: %f%% \n", pctdiff);
 
         }
     }
