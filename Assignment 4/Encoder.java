@@ -258,7 +258,7 @@ public class Encoder{
 
             /* Two symbol encoding */
             double avgbitTwo = twoEncode(codesTwo);
-            twoDecode(codesTwo);
+            twoDecode(codesTwo, codesTwo);
 
             double e2 = entropy(freqTwo, count*count); // entropy
             double avg2 = (avgbitTwo+e2)/2;
