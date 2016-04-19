@@ -43,8 +43,8 @@ public class subBytes{
     };
 
     /* Uses the state array values as an index into a lookup
-       table, and replaces its value in state with the value stored in the table.
-       Encryption.
+     * table, and replaces its value in state with the value stored in the table.
+     * Encryption.
      */
     public static void sub(byte[][] state){
         for(int c = 0; c < 4; c++){
@@ -56,8 +56,8 @@ public class subBytes{
     }
 
     /* Takes in the state array and uses its value as an index into a lookup
-       table, and replaces its value in state with the value stored in the table.
-       Decryption.
+     * table, and replaces its value in state with the value stored in the table.
+     * Decryption.
      */
     public static void invSub(byte[][] state){
         for(int c = 0; c < 4; c++){
@@ -67,7 +67,7 @@ public class subBytes{
             }
         }
     }
-    
+
     /* Takes a byte[] and uses the substitution transformation on it.
     */
     public static void subWord(byte[] b){
