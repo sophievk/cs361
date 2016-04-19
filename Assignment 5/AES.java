@@ -9,26 +9,15 @@ public class AES{
         byte[][] rKey = roundKey.get(keySchedule, 0);
         roundKey.add(rKey, state);
 
-        System.out.println("After addRoundKey(0):");
-        System.out.println(byteToHex(to1D(state)));
-
         /* Main rounds. */
         for(int r = 1; r < 14; r++){
             rKey = roundKey.get(keySchedule, r);
             subBytes.sub(state);
-            System.out.println("After subBytes:");
-            System.out.println(byteToHex(to1D(state)));
             shiftRows.shift(state);
-            System.out.println("After shiftRows:");
-            System.out.println(byteToHex(to1D(state)));
             for(int c = 0; c < 4; c++){
                 mixColumn.mixColumn2(c, state);
             }
-            System.out.println("After mixColumns:");
-            System.out.println(byteToHex(to1D(state)));
             roundKey.add(rKey, state);
-            System.out.printf("After addRoundKey(%d):\n", r);
-            System.out.println(byteToHex(to1D(state)));
         }
 
         /* Final round */
@@ -150,61 +139,50 @@ public class AES{
 
             if(option.equals("e")){
                 FileWriter fw = new FileWriter(file+".enc");
+                long totalBytes = 0;
+                long totalTime = 0;
+
                 while(fileScan.hasNext()){
                     String line = fileScan.nextLine();
+                    totalBytes += line.length()/2;
 
-                    System.out.println("State");
                     /* Read in initial state. */
                     state = to2D(hexToByte(line));
 
-                    System.out.println("The Plaintext is:");
-                    for(int r = 0; r < state.length; r++){
-                        for(int c = 0; c < state[r].length; c++){
-                            System.out.print(state[r][c]+" ");
-                        }
-                        System.out.println();
-                    }
-                    System.out.println();
-
-                    System.out.println("The cipherKey is:");
-                    for(int r = 0; r < key.length; r++){
-                        for(int c = 0; c < key[r].length; c++){
-                            System.out.print(key[r][c]+" ");
-                        }
-                        System.out.println();
-                    }
-                    System.out.println();
-
-                    System.out.println("The expanded key is:");
-                    for(int r = 0; r < keySchedule.length; r++){
-                        for(int c = 0; c < keySchedule[r].length; c++){
-                            System.out.print(keySchedule[r][c]+" ");
-                        }
-                        System.out.println();
-                    }
-
+                    final long startTime = System.currentTimeMillis();
                     encrypt(keySchedule);
+                    final long endTime = System.currentTimeMillis();
+                    totalTime += (endTime-startTime);
 
                     /* Write state to file. */
                     String encrypted = byteToHex(to1D(state));
                     fw.write(encrypted+"\n");
                 }
+                System.out.println("Total encrypt time: "+ (totalBytes/totalTime)+ " bytes/msec");
                 fw.close();
             }
             else if(option.equals("d")){
                 FileWriter fw = new FileWriter(file+".dec");
+                long totalBytes = 0;
+                long totalTime = 0;
+
                 while(fileScan.hasNext()){
                     String line = fileScan.nextLine();
+                    totalBytes += line.length()/2;
 
                     /* Read in initial state. */
                     state = to2D(hexToByte(line));
 
+                    final long startTime = System.currentTimeMillis();
                     decrypt(keySchedule);
+                    final long endTime = System.currentTimeMillis();
+                    totalTime += (endTime-startTime);
 
                     /* Write state to file. */
                     String decrypted = byteToHex(to1D(state));
                     fw.write(decrypted+"\n");
                 }
+                System.out.println("Total decrypt time: "+ (totalBytes/totalTime)+ "bytes/msec");
                 fw.close();
             }
         }
