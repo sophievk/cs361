@@ -2,32 +2,55 @@ import java.util.*;
 import java.io.*;
 
 public class mangles{
-    public static String determine(String input, String method){
+    private static char[] chars = {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+        'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '@', '#', '$',
+        '%', '^', '&', '*', '(', ')', '?', '<', '>', ',', '.', '~', '`'
+    };
+
+    public static String determine(String word, String value, String method){
         switch(method){
             case "lower":
-                return input.toLowerCase();
+                return same(value, word.toLowerCase());
             case "upper":
-                return input.toUpperCase();
+                return same(value, word.toUpperCase());
             case "capital":
-                return capitalize(input);
+                return same(value, capitalize(word));
             case "ncapital":
-                return nCapitalize(input);
+                return same(value, nCapitalize(word));
             case "reverse":
-                return reverse(input);
+                return same(value, reverse(word));
             case "first":
-                return delFirst(input);
+                return same(value, delFirst(word));
             case "last":
-                return delLast(input);
+                return same(value, delLast(word));
             case "duplicate":
-                return duplicate(input);
+                return same(value, duplicate(word));
             case "reflect":
-                break;
+                return reflect(word, value);
             case "toggle":
-                break;
+                return toggleCase(word, value);
+            case "prepend":
+                return prepend(word, value);
+            case "append":
+                return append(word, value);
             default:
                 break;
         }
         return "";
+    }
+
+    /* Takes the encrypted value and mangle and determines if they match.
+     * crypt() is called to encrypt the mangle and salt.
+     */
+    public static String same(String value, String mangle){
+        String salt = value.substring(0, 2);
+        String encrypt = jcrypt.crypt(salt, mangle);
+        if(encrypt.equals(value)){
+            return mangle;
+        }
+        return value;
     }
 
     /* Capitalizes the String input. Returns the capitalized String.
@@ -55,7 +78,6 @@ public class mangles{
      */
     public static String delFirst(String input){
         String output = input.substring(1);
-        // System.out.println(output);
         return output;
     }
 
@@ -63,7 +85,6 @@ public class mangles{
      */
     public static String delLast(String input){
         String output = input.substring(0, input.length()-1);
-        // System.out.println(output);
         return output;
     }
 
@@ -73,20 +94,28 @@ public class mangles{
         return input+input;
     }
 
-    /* Writes to file a reflected input before or after.
+    /* Creates the reflected String input. Determines if it is equal to the
+     * value and returns the result from same().
      */
-    public static void reflect(String input, BufferedWriter bw) throws IOException{
+    public static String reflect(String input, String value){
         String output1 = input + reverse(input);
+
+        if(!same(value, output1).equals(value)){
+            return same(value, output1);
+        }
+
         String output2 = reverse(input) + input;
-        bw.write(output1+"\n");
-        bw.write(output2+"\n");
+
+        return same(value, output2);
     }
 
-    /* Writes to file the toggleCase String input.
+    /* Creates the toggleCase String input. Determines if it is equal to the
+     * value and returns the result from same().
      */
-    public static void toggleCase(String input, BufferedWriter bw) throws IOException{
+    public static String toggleCase(String input, String value){
         String output = "";
         char[] chars =  input.toCharArray();
+
         for(int i = 0; i < chars.length; i++){
             char c = chars[i];
             if(i%2 == 0){
@@ -97,7 +126,11 @@ public class mangles{
             }
         }
         output = new String(chars);
-        bw.write(output+"\n");
+
+        if(!same(value, output).equals(value)){
+            return same(value, output);
+        }
+
         for(int i = 0; i < chars.length; i++){
             char c = chars[i];
             if(i%2 == 0){
@@ -108,11 +141,38 @@ public class mangles{
             }
         }
         output = new String(chars);
-        bw.write(output+"\n");
+
+        return value;
+    }
+
+    /* Prepends a character to the String input. Checks if it is equal
+     * and returns the result from same().
+     */
+    public static String prepend(String input, String value){
+        for(char c : chars){
+            String output = Character.toString(c)+input;
+            if(!same(value, output).equals(value)){
+                return same(value, output);
+            }
+        }
+        return value;
+    }
+
+    /* Appends a character to the String input. Checks if it is equal
+     * and returns the result from same().
+     */
+    public static String append(String input, String value){
+        for(char c : chars){
+            String output = input+Character.toString(c);
+            if(!same(value, output).equals(value)){
+                return same(value, output);
+            }
+        }
+        return value;
     }
 }
 
-// prepend a character to the string, e.g., @string;
+// **prepend a character to the string, e.g., @string;
 // append a character to the string, e.g., string9;
 // **delete the first character from the string, e.g., tring;
 // **delete the last character from the string, e.g., strin;

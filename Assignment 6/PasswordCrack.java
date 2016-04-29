@@ -2,44 +2,47 @@ import java.util.*;
 import java.io.*;
 
 public class PasswordCrack{
-    private static String[] mangle = {"lower", "reverse", "upper", "capital", "ncapital", "first", "last", "duplicate", "reflect", "toggle"};
-    private static LinkedList<String> dictionary;
+    private static String[] mangle = {
+        "lower", "reverse", "upper", "capital", "ncapital", "first", "last",
+        "duplicate", "reflect", "toggle", "prepend", "append"
+    };
+    private static LinkedList<String> dictionary = new LinkedList<String>();
 
     /* Adds first and last names to the dictionary.
      */
-    public static void addToFile(String name, String dictionary) throws IOException{
-        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(dictionary), true));
+    public static void addToFile(String name){
         String[] firstAndLast = name.split(" ");
         for(int i = 0; i < firstAndLast.length; i++){
             String item = firstAndLast[i];
             dictionary.push(item.toLowerCase());
-            // bw.write(item.toLowerCase()+"\n");
         }
-        bw.flush();
-        bw.close();
     }
 
-    public static void check(Hashtable<String, String> list, String dictionary) throws IOException{
-        Scanner wordScan = new Scanner(new File(dictionary));
+    /* Iterates thorough the Hashtable and tries to find a matching encrypted
+     * mangle as the encrypted password.
+     */
+    public static void crack(Hashtable<String, String> list){
+        // Scanner wordScan = new Scanner(new File(dictionary));
         Set<String> keys = list.keySet();
 
-        while(wordScan.hasNext()){
-            String word = wordScan.nextLine();
-            // System.out.println("word: "+word);
-            for(String method : mangle){
-                // System.out.println("method: "+method);
-                String m = mangles.determine(word, method);
-                for(String key : keys){
-                    String name = key;
-                    String value = list.get(key);
-                    String salt = value.substring(0, 2);
-                    String password = value.substring(2);
-                    String encrypt = jcrypt.crypt(salt, m);
-                    // System.out.println("list: "+s+" Encrypt: "+encrypt);
-                    if(encrypt.equals(value)){
-                        System.out.println("The password for user "+ name + " is "+m);
-                        list.remove(word);
-                        break;
+        while(!list.isEmpty()){
+            for(String word : dictionary){
+                // String word = wordScan.nextLine();
+                // System.out.println("word: "+word);
+                for(String method : mangle){
+                    // System.out.println("method: "+method);
+                    // String m = mangles.determine(word, method);
+                    for(String key : keys){
+                        String name = key;
+                        String value = list.get(key);
+                        // String salt = value.substring(0, 2);
+                        // String encrypt = jcrypt.crypt(salt, m);
+                        String m = mangles.determine(word, value, method);
+                        if(!m.equals(value)){
+                            System.out.println("The password for user "+ name + " is "+m);
+                            list.remove(name);
+                            break;
+                        }
                     }
                 }
             }
@@ -58,6 +61,7 @@ public class PasswordCrack{
                 String line = wordScan.nextLine();
                 dictionary.add(line);
             }
+            wordScan.close();
 
             Hashtable<String, String> passwords = new Hashtable();
 
@@ -67,11 +71,11 @@ public class PasswordCrack{
                 String name = line[4];
 
                 passwords.put(name, encrypted);
-                addToFile(name, wordsFile);
+                addToFile(name);
             }
             passScan.close();
 
-            check(passwords, wordsFile);
+            crack(passwords);
         }
     }
 }
