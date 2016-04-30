@@ -9,24 +9,26 @@ public class mangles{
         '%', '^', '&', '*', '(', ')', '?', '<', '>', ',', '.', '~', '`'
     };
 
+    /* Determines which method should be called and returns that method.
+     */
     public static String determine(String word, String value, String method){
         switch(method){
             case "lower":
-                return same(value, word.toLowerCase());
+                return word.toLowerCase();
             case "upper":
-                return same(value, word.toUpperCase());
+                return word.toUpperCase();
             case "capital":
-                return same(value, capitalize(word));
+                return capitalize(word);
             case "ncapital":
-                return same(value, nCapitalize(word));
+                return nCapitalize(word);
             case "reverse":
-                return same(value, reverse(word));
+                return reverse(word);
             case "first":
-                return same(value, delFirst(word));
+                return delFirst(word);
             case "last":
-                return same(value, delLast(word));
+                return delLast(word);
             case "duplicate":
-                return same(value, duplicate(word));
+                return duplicate(word);
             case "reflect":
                 return reflect(word, value);
             case "toggle":
@@ -38,11 +40,12 @@ public class mangles{
             default:
                 break;
         }
-        return "";
+        return value;
     }
 
     /* Takes the encrypted value and mangle and determines if they match.
-     * crypt() is called to encrypt the mangle and salt.
+     * crypt() is called to encrypt the mangle and salt. Returns mangle if the
+     * same, the value otherwise.
      */
     public static String same(String value, String mangle){
         String salt = value.substring(0, 2);
