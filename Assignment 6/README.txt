@@ -7,7 +7,7 @@ EMAIL: s.khounlo@utexas.edu;
 [Program 6]
 
 [Description]
-There are two files: PasswordCrack.java and mangles.java.
+There are three files: PasswordCrack.java, mangles.java, and jcrypt.java.
 PasswordCrack.java has 3 methods:
 addToFile() - adds first and last names to the dictionary.
 check() - iterates thorough the Hashtable and tries to find a matching encrypted
@@ -32,6 +32,7 @@ prepend() - Prepends a character to the String input. Checks if it is equal
 and returns the result from same().
 append() - appends a character to the String input. Checks if it is equal
 and returns the result from same().
+jcrypt.java: I downloaded the class from the link provided in the assignment description.
 
 [Finish]
 We found XX/20 on passwd1 in time XX seconds. We found XX/20 on passwd2 in time XX seconds.
