@@ -11,18 +11,16 @@ public class PasswordCrack{
     private static List<String[]> mangle3 = (
         Arrays.asList(new String[] {"prepend"}, new String[] {"append"},
         new String[] {"last", "append"}, new String[] {"ncapital", "append"},
-        new String[] {"first", "append"}, new String[] {"capital", "append"},
-        new String[] {"last", "prepend"}, new String[] {"ncapital", "prepend"},
-        new String[] {"capital", "prepend"}, new String[] {"ncapital", "prepend"})
+        new String[] {"first", "append"}, new String[] {"capital", "append"})
     );
     private static List<String[]> mangle4 = new ArrayList(
         Arrays.asList(new String[] {"capital", "reverse"}, new String[] {"ncapital", "reverse"},
         new String[] {"last", "reverse"}, new String[] {"first", "reverse"},
         new String[] {"upper", "reverse"}, new String[] {"upper", "last"},
         new String[] {"upper", "first"}, new String[] {"ncapital", "last"},
-        new String[] {"ncapital", "first"}, new String[] {"capital", "first"},
+        new String[] {"first", "ncapital"}, new String[] {"first", "capital"},
         new String[] {"capital", "last"}, new String[] {"reverse", "capital"},
-        new String[] {"reverse", "ncapital"}, 
+        new String[] {"reverse", "ncapital"},
         new String[] {"capital", "last", "reverse"}, new String[] {"capital", "first", "reverse"},
         new String[] {"ncapital", "last", "reverse"}, new String[] {"ncapital", "first", "reverse"})
 
